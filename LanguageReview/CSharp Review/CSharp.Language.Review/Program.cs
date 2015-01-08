@@ -74,5 +74,33 @@ namespace CSharp.Language.Review.Entities
                 return Percent * Weight / 100;
             }
         }
+
+        // Constructors
+        public EarnedMark(WeightedMark markableItem, int possible, double earned)
+            : this(markableItem.Name, markableItem.Weight, possible, earned)
+        {
+        }
+
+        public EarnedMark(string name, int weight, int possible, double earned)
+            : base(name, weight)
+        {
+            if (possible <= 0)
+                throw new Exception("Invalid possible marks");
+            Possible = possible;
+            Earned = earned;
+        }
+
+        // Methods
+        public override string ToString()
+        {
+            // This overridden method is an example of polymorphism
+            return string.Format("{0} ({1})\t - {2}% ({3}/{4}) \t- Weighted Mark {5}%",
+                Name,
+                Weight,
+                Percent,
+                Earned,
+                Possible,
+                WeightedPercent);
+        }
     }
 }
