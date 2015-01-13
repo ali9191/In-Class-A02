@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharp.Language.Review.Entities; // allows our Program class to see the other classes
 
 namespace CSharp.Language.Review
 {
@@ -15,6 +16,64 @@ namespace CSharp.Language.Review
         // This is a method. It is a special one because of its name - Main() - and thre should only be one of these in any given console application.
         public static void Main(string[] args)
         {
+            // DemoToString();
+            Program app = new Program(args);
+
+            app.AssignMarks(30, 80);
+
+            foreach(Student person in app.Students)
+            {
+                System.Console.WriteLine("Name: " + person.Name);
+                foreach (EarnedMark item in person.Marks)
+                    System.Console.WriteLine("\t" + item);
+            }
+        }
+
+        private List<Student> _students = new List<Student>();
+
+        public List<Student> Students
+        {
+            get { return _students; }
+            set { _students = value; }
+        }
+
+        public Program(string[] studentNames)
+        {
+            WeightedMark[] courseMarks = new WeightedMark[4];
+            courseMarks[0] = new WeightedMark("Quiz 1", 20);
+            courseMarks[1] = new WeightedMark("Quiz 2", 20);
+            courseMarks[2] = new WeightedMark("Exercises", 25);
+            courseMarks[3] = new WeightedMark("Lab", 35);
+            int[] possibleMarks = new int[4] { 25, 50, 12, 35 };
+
+            foreach(string name in studentNames)
+            {
+                EarnedMark[] marks = new EarnedMark[4];
+                for (int i = 0; i < possibleMarks.Length; i++)
+                    marks[i] = new EarnedMark(courseMarks[i], possibleMarks[i], 0);
+                Students.Add(new Student(name, marks));
+            }
+        }
+
+        public void AssignMarks(int min, int max)
+        {
+            foreach (Student person in Students)
+                foreach (EarnedMark item in person.Marks)
+                    item.Earned = (rnd.Next(min, max) / 100.0) * item.Possible;
+        }
+
+        public static void DemoToString()
+        {
+            // Make a WeightedMark object
+            WeightedMark evaluation = new WeightedMark("Assessment 1", 15);
+            Console.WriteLine("Here is my evaluation object: " + evaluation.ToString());
+            // Make an EarnedMark object
+            EarnedMark myAssessment = new EarnedMark(evaluation, 20, 18);
+            Console.WriteLine("Here is myAssessment object: " + myAssessment.ToString());
+
+            // remake the evaluation object as a new object
+            evaluation = new EarnedMark("Quiz 3", 10, 50, 40);
+            Console.WriteLine("Here is my new evalation object: " + evaluation.ToString());
         }
     }
 }
@@ -25,6 +84,14 @@ namespace CSharp.Language.Review.Entities
     {
         // Autoimplemented Properties
         public string Name { get; private set; }
+        public EarnedMark[] Marks { get; private set; }
+
+        public Student(string name, EarnedMark[] marks)
+        {
+            // TODO: Probably should do some validation, but leave that 'till later.....
+            Name = name;
+            Marks = marks;
+        }
     }
 
     public class WeightedMark
